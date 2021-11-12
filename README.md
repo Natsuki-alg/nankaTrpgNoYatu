@@ -1,0 +1,2 @@
+# nankaTrpgNoYatu
+TRPGのなんかを作ろう！
