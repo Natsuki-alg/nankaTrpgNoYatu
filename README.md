@@ -87,4 +87,5 @@ PLが作成したPC情報、およびGMが作成したエネミー情報を取�
 
 言葉だけではなかなか難しい気がするので、図を起こした。
 
-![機能ブロック図(初版)](https://github.com/Natsuki-alg/nankaTrpgNoYatu\FunctionalBlockDiagram.png "FunctionalBlockDiagram.png")
+![機能ブロック図(初版)]!(https://user-images.githubusercontent.com/64512699/144745619-28d8eec3-f30b-4358-a334-9a36e7d37704.png)
+
