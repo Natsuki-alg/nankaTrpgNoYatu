@@ -88,5 +88,7 @@ PLが作成したPC情報、およびGMが作成したエネミー情報を取�
 言葉だけではなかなか難しい気がするので、図を起こした。
 
 ![image](https://user-images.githubusercontent.com/64512699/144745691-f94e47b4-9e00-419c-86c7-76264cd7f735.png)
+![image](https://user-images.githubusercontent.com/94184859/145712325-17329232-5131-4f34-ab3b-8dd245180faf.png)
+
 
 
