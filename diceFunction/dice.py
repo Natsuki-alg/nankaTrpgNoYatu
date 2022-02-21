@@ -1,39 +1,48 @@
-# ダイスロール要求dictを受け取り、その結果を返すプログラムを作るぞ！
-
-# 正規表現を使用する
+import argparse
 import re
-# ランダム処理を使用する
-import random
 # 自作の関数をインポート
 from create_dPara import create_dPara
 from diceroll import diceroll
-# まだ使いこなせていないlogger機能…。
-from logging import getLogger, FileHandler, DEBUG, StreamHandler, INFO, Formatter 
-logger = getLogger(__name__)
+from dbc2sbc import dbc2sbc
 
+parser = argparse.ArgumentParser(description='要求されたダイスの結果を返します。')
+parser.add_argument('d', type=str, default='',
+                    help='ダイスの種類および個数を入力してください')
+parser.add_argument('-v7', action='store_true', default=bool(0),
+                    help='CoC第7版仕様のd100ロールを行います。')
+parser.add_argument('-bp', default='Default',
+                    help='ボーナスダイスおよびペナルティダイスの数を整数で入力してください。プラス側がボーナス、マイナス側がペナルティとなります。「-bp」オプション使用時、何も値を指定しないとエラーで動きません。') 
+args = parser.parse_args()
 
+selectDice = args.d
 
+# -v7オプション無しで-bpオプションが入っていたらアナウンスする。
+# TODO:エラーで止めたいけどpythonで任意のタイミングでエラー出す方法が分からないので後々やる。
+if args.v7 and not args.bp == 'Default':
+    print('「-bp」オプション使用時は「-v7」オプションも同時に選択してください。')
 
+# bpオプションにstr型の数字が入っている？
+if bool(re.search('^[-|+|＋|ー|－]?[0-9|０-９][0-9|０-９]?$',args.bp)):
+    # 全角文字が入っている？
+    if bool(re.search('^[＋|ー|－]?[０-９][０-９]?$',args.bp)):
+        # 処理はするけど半角文字に変換した旨をアナウンス。
+        print('-bpオプションの内容に全角文字「{}」が含まれていました。\n相応な半角文字に変換してdice.pyの処理を続けます。'
+              .format(re.search('^[-|+|＋|ー|－]?[0-9|０-９][0-9|０-９]?$',args.bp).group()))
 
-# 文字列データとして'〇d☆'もしくは'choice'を入力する。
-# selectDice = 'choice'
-selectDice = '1d100'
-# d100を10面ダイス×2(calc)で行うか、100面ダイス×1(simple)で行うか。
-d100Pattern = 'calc'
-# ボーナスダイスもしくはペナルティダイスの数。
-# プラスがボーナス扱いでマイナスがペナルティ扱い。
-bp = 0
-# choiceするリスト
-rdmList = ['hoge','fuga','piyo','foo','bar']
+    # str型の整数が入っていたので、int型に変換してbpとする。
+    bp = int(dbc2sbc(args.bp))
+# 整数ではなく、'Default'が入っている？    
+elif args.bp == 'Default':
+    # bpにはそのままの引数を入れる。
+    bp = args.bp
+# 'Default'でない文字列が入れられている。
+else:
+    print('オプション「-bp」は整数の入力のみを受け付けます。\n値を確認し、再度dice.pyを実行してください。')
 
-
-
-
-
-
+# d100のバージョン選択。
+selectV7 = args.v7
 # ダイスの状態を取得する。
-dPara = create_dPara(selectDice,d100Pattern,bp,rdmList)
-
+dPara = create_dPara(selectDice,selectV7,bp)
 # ダイス結果リスト
 diceRollList=[]
 
@@ -43,13 +52,8 @@ for i in range(1,dPara['diceCount']+1):
     diceResult = diceroll(dPara)
     diceRollList.append(diceResult['value'])
     # 毎回の詳細なロール結果を見たければこのprintを生かす。
-    print(diceResult)
+    print(diceResult['comment'])
 
-# 折角なので合計値をつくる。
+# 折角なので合計値をつくって表示しておく。
 diceRollListSum = sum(diceRollList)
-
-# choiceか否かで最後の表示を変える。
-if dPara['diceType'] == 'choice':
-    print('choice {} => {}'.format(dPara['rdmList'],diceRollList))
-elif not dPara['diceType'] == 'choice':
-    print('{} d {} => {} Total「{}」'.format(dPara['diceCount'],dPara['diceType'],diceRollList,diceRollListSum))
+print('Result {} Total「{}」'.format(diceRollList,diceRollListSum))
