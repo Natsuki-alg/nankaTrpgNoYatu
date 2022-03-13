@@ -16,10 +16,14 @@ args = parser.parse_args()
 
 selectDice = args.d
 
-# -v7オプション無しで-bpオプションが入っていたらアナウンスする。
-# TODO:エラーで止めたいけどpythonで任意のタイミングでエラー出す方法が分からないので後々やる。
-if args.v7 and not args.bp == 'Default':
-    print('「-bp」オプション使用時は「-v7」オプションも同時に選択してください。')
+# -v7オプション無しで-bpオプションが入っていたらアナウンスしつつ処理を中断する。
+try:
+    if not args.v7 and not args.bp == 'Default':
+        # 条件合致したときはゼロ割エラー処理させてexceptで拾って止める。
+        error = 1 / 0
+except ZeroDivisionError:
+    print('「-bp」オプション使用時は「-v7」オプションも同時に選択してください。\n処理を中断します。')
+    exit()
 
 # bpオプションにstr型の数字が入っている？
 if bool(re.search('^[-|+|＋|ー|－]?[0-9|０-９][0-9|０-９]?$',args.bp)):
